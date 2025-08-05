@@ -54,6 +54,7 @@ import com.example.akhirkab.ui.theme.AkhirKabTheme
 import com.example.akhirkab.ui.theme.CustomBlue
 import com.example.akhirkab.ui.theme.CustomPink
 import com.presentation.component.AgeStats
+import com.presentation.component.CustomDatePickerDialog
 import com.presentation.component.EmojiPickerDialog
 import com.presentation.component.StatisticsCard
 import com.presentation.component.StylizedAgeText
@@ -61,21 +62,30 @@ import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun CalculatorScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    state: CalcularUiState,
+    onAction: (CalculatorAction) -> Unit
+
 ){
 
-    var isEmojiPickerDialogOpen by rememberSaveable { mutableStateOf(false) }
-    var emoji by remember { mutableStateOf("🎂") }
-
-
     EmojiPickerDialog(
-        isOpen = isEmojiPickerDialogOpen,
+        isOpen = state.isEmojiPickerDialogOpen,
         onEmojiSelected = {selectedEmoji ->
-            emoji = selectedEmoji
-            isEmojiPickerDialogOpen = false
+            onAction(CalculatorAction.EmojiSelected(selectedEmoji))
         },
-        onDismissRequest = { isEmojiPickerDialogOpen = false }
+        onDismissRequest = { onAction(CalculatorAction.DismissEmojiPicker) }
     )
+
+
+    CustomDatePickerDialog(
+        isOpen = state.isDatePickerDialogOpen,
+        onDismissRequest = { onAction(CalculatorAction.DismissDatePicker) },
+        onConfirmButtonClick = { selectedDateMillis ->
+            onAction(CalculatorAction.DateSelected(selectedDateMillis))
+        }
+
+    )
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -96,11 +106,12 @@ fun CalculatorScreen(
 
             ) {
             HeaderSection(
+
                 modifier = Modifier
                     .widthIn(max = 400.dp)
                     .padding(8.dp),
-                emoji = emoji,
-                onEmojiBoxClick = {isEmojiPickerDialogOpen = true}
+                state = state,
+                onAction = onAction
             )
             StatisticsSection(
                 modifier = Modifier
@@ -166,9 +177,10 @@ private fun CalculatorTopBar(
 
 @Composable
 private fun HeaderSection (
+
+    state: CalcularUiState,
+    onAction: (CalculatorAction) -> Unit,
     modifier: Modifier = Modifier,
-    emoji: String,
-    onEmojiBoxClick: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -190,11 +202,13 @@ private fun HeaderSection (
                     ),
                     shape = CircleShape
                 )
-                .clickable {onEmojiBoxClick()},
+                .clickable {
+                    onAction(CalculatorAction.ShowEmojiPicker)
+                },
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = emoji,
+                text = state.emoji,
                 style = MaterialTheme.typography.displayLarge,
             )
         }
@@ -211,14 +225,14 @@ private fun HeaderSection (
         Spacer(modifier = Modifier.height(16.dp))
         DateSection(
             title = "Start Date",
-            date = "20 October 2023",
-            onDateIconClick = { /* Handle start date click */ }
+            date = "${state.dateMillis?.let { it -> java.text.SimpleDateFormat("dd MMMM yyyy").format(it) } ?: "Select Date"}",
+            onDateIconClick = { onAction(CalculatorAction.ShowDatePicker) }
         )
         Spacer(modifier = Modifier.height(8.dp))
         DateSection(
             title = "End Date",
-            date = "20 October 2025",
-            onDateIconClick = { /* Handle end date click */ }
+            date = "${state.dateMillis?.let { it -> java.text.SimpleDateFormat("dd MMMM yyyy").format(it) } ?: "Select Date"}",
+            onDateIconClick = { onAction(CalculatorAction.ShowDatePicker) }
         )
     }
     
@@ -295,7 +309,10 @@ private fun DateSection(
 @Composable
 private fun PreviewCalculatorScreen() {
     AkhirKabTheme {
-        CalculatorScreen()
+        CalculatorScreen(
+            state = CalcularUiState(),
+            onAction = {}
+        )
     }
     
 }
