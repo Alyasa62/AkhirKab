@@ -53,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import com.example.akhirkab.ui.theme.AkhirKabTheme
 import com.example.akhirkab.ui.theme.CustomBlue
 import com.example.akhirkab.ui.theme.CustomPink
-import com.presentation.component.AgeStats
 import com.presentation.component.CustomDatePickerDialog
 import com.presentation.component.EmojiPickerDialog
 import com.presentation.component.StatisticsCard
@@ -116,7 +115,8 @@ fun CalculatorScreen(
             StatisticsSection(
                 modifier = Modifier
                     .widthIn(max = 400.dp)
-                    .padding(8.dp)
+                    .padding(8.dp),
+                state = state
 
             )
         }
@@ -217,22 +217,24 @@ private fun HeaderSection (
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth(),
-            value = "",
-            onValueChange = { },
+            value = state.title,
+            onValueChange = { newTitle ->
+                onAction(CalculatorAction.SetTitle(newTitle))
+            },
             label = { Text(text = "Title") },
             singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
         DateSection(
             title = "Start Date",
-            date = "${state.dateMillis?.let { it -> java.text.SimpleDateFormat("dd MMMM yyyy").format(it) } ?: "Select Date"}",
-            onDateIconClick = { onAction(CalculatorAction.ShowDatePicker) }
+            date = "${state.fromDateMillis?.let { it -> java.text.SimpleDateFormat("dd MMMM yyyy").format(it) } ?: "Select Date"} ",
+            onDateIconClick = { onAction(CalculatorAction.ShowDatePicker(DateField.FROM)) }
         )
         Spacer(modifier = Modifier.height(8.dp))
         DateSection(
             title = "End Date",
-            date = "${state.dateMillis?.let { it -> java.text.SimpleDateFormat("dd MMMM yyyy").format(it) } ?: "Select Date"}",
-            onDateIconClick = { onAction(CalculatorAction.ShowDatePicker) }
+            date = "${state.toDateMillis?.let { it -> java.text.SimpleDateFormat("dd MMMM yyyy").format(it) } ?: "Select Date"}",
+            onDateIconClick = { onAction(CalculatorAction.ShowDatePicker(DateField.TO)) }
         )
     }
     
@@ -240,7 +242,8 @@ private fun HeaderSection (
 
 @Composable
 private fun StatisticsSection(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    state: CalcularUiState = CalcularUiState()
 ) {
     Column (
         modifier = modifier
@@ -251,21 +254,13 @@ private fun StatisticsSection(
     ) {
 
             StylizedAgeText(
-                years = 5,
-                months = 3,
-                days = 15
+                years = state.period.years,
+                months = state.period.months,
+                days = state.period.days,
             )
             StatisticsCard(
-                ageStats = AgeStats(
-                    years = 5,
-                    months = 3,
-                    weeks = 2,
-                    days = 15,
-                    hours = 120,
-                    minutes = 3000,
-                    seconds = 180000
+                ageStats = state.ageStats
                 )
-            )
 
     }
 

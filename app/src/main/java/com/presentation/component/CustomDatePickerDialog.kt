@@ -1,5 +1,7 @@
 package com.presentation.component
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,7 +25,7 @@ fun CustomDatePickerDialog(
 
     if(isOpen) {
         DatePickerDialog(
-            modifier = modifier,
+            modifier = modifier.verticalScroll(rememberScrollState()),
             onDismissRequest = onDismissRequest,
 
             confirmButton = {

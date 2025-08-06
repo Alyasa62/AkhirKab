@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
                     val viewModel: CalculatorViewModel = viewModel()
-                    val state by viewModel.UiState.collectAsStateWithLifecycle()
+                    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
                     CalculatorScreen(
                         modifier = Modifier.padding(innerPadding),

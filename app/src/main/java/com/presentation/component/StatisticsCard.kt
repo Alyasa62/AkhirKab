@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.presentation.calculator.AgeStats
 
 @Composable
 fun StatisticsCard(
@@ -112,16 +113,8 @@ private fun PreviewStatisticsCard() {
             hours = 120,
             minutes = 3000,
             seconds = 180000
-        )    )
+        )
+    )
     
 }
 
-data class AgeStats(
-    val years: Int = 0,
-    val months: Int = 0,
-    val weeks: Int = 0,
-    val days: Int = 0,
-    val hours: Int = 0,
-    val minutes: Int = 0,
-    val seconds: Int = 0,
-)
