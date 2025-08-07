@@ -1,20 +1,35 @@
 package com.presentation.calculator
 
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.data.local.OccasionDao
+import com.data.local.OccasionDatabase
+import com.data.local.OccasionEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.periodUntil
 import kotlinx.datetime.until
 
-class CalculatorViewModel : ViewModel() {
+class CalculatorViewModel(
+    application: android.app.Application
+) : AndroidViewModel(application) {
+
+    private val occasionDao: OccasionDao = OccasionDatabase.getDatabase(application).occasionDao()
 
     private val _uiState = MutableStateFlow(CalcularUiState())
     val uiState: StateFlow<CalcularUiState> = _uiState.asStateFlow()
+
+    init {
+        getOccasion()
+    }
 
     fun onAction(action: CalculatorAction) {
         when (action) {
@@ -43,6 +58,7 @@ class CalculatorViewModel : ViewModel() {
                 }
             }
 
+
             CalculatorAction.DismissDatePicker -> {
                 _uiState.update { it.copy(isDatePickerDialogOpen = false) }
             }
@@ -60,6 +76,38 @@ class CalculatorViewModel : ViewModel() {
                 _uiState.update { it.copy(title = action.title) }
 
             }
+            CalculatorAction.SaveOccasion -> {
+                saveOccasion()
+            }
+        }
+    }
+
+    private fun saveOccasion() {
+        viewModelScope.launch {
+
+            val occasion = OccasionEntity(
+                id = 1,
+                title = _uiState.value.title,
+                dateMillis = _uiState.value.fromDateMillis,
+                emoji = _uiState.value.emoji
+            )
+            occasionDao.upsertOccasion(occasion)
+        }
+    }
+
+    private fun getOccasion() {
+        viewModelScope.launch {
+            val occasion = occasionDao.getOccasionById(1)?.let {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        title = it.title,
+                        emoji = it.emoji,
+                        fromDateMillis = it.dateMillis,
+                        toDateMillis = it.dateMillis
+                    )
+                }
+            }
+            calculateStats()
         }
     }
 
