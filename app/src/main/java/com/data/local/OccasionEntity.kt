@@ -8,8 +8,7 @@ import androidx.room.PrimaryKey
 data class OccasionEntity (
     @PrimaryKey(autoGenerate = true) val id: Int,
     val title: String,
-    val dateMillis: Long? ,
+    val dateMillis: Long?,
+    val endDateMillis: Long?,
     val emoji: String
-
-
 )
