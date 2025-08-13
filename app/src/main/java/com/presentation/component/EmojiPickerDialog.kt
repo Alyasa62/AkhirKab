@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.presentation.theme.spacing
 
 @Composable
 fun EmojiPickerDialog(
@@ -57,18 +58,16 @@ private fun EmojiGrid(
     LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Fixed(5),
-        contentPadding = PaddingValues(8.dp)
+        contentPadding = PaddingValues(MaterialTheme.spacing.small)
     ) {
         items(emojis) { emoji ->
             IconButton(
                 onClick = { onEmojiSelected(emoji) },
-                modifier = Modifier.padding(4.dp)
+                modifier = Modifier.padding(MaterialTheme.spacing.extraSmall)
             ) {
-                // BUG FIX 2: Removed the redundant `.clickable {}` modifier from the Text.
-                // The IconButton's `onClick` is the correct place to handle the selection.
                 Text(
                     text = emoji,
-                    style = MaterialTheme.typography.headlineMedium, // Increased size for better touch target
+                    style = MaterialTheme.typography.headlineMedium,
                 )
             }
         }

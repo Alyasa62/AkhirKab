@@ -50,13 +50,14 @@ import androidx.compose.ui.text.input.KeyboardType.Companion.Text
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
-import com.example.akhirkab.ui.theme.AkhirKabTheme
-import com.example.akhirkab.ui.theme.CustomBlue
-import com.example.akhirkab.ui.theme.CustomPink
 import com.presentation.component.CustomDatePickerDialog
 import com.presentation.component.EmojiPickerDialog
 import com.presentation.component.StatisticsCard
 import com.presentation.component.StylizedAgeText
+import com.presentation.theme.AkhirKabTheme
+import com.presentation.theme.CustomBlue
+import com.presentation.theme.CustomPink
+import com.presentation.theme.spacing
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -100,7 +101,7 @@ fun CalculatorScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(8.dp),
+                .padding(MaterialTheme.spacing.small),
 
 
             ) {
@@ -108,14 +109,14 @@ fun CalculatorScreen(
 
                 modifier = Modifier
                     .widthIn(max = 400.dp)
-                    .padding(8.dp),
+                    .padding(MaterialTheme.spacing.small),
                 state = state,
                 onAction = onAction
             )
             StatisticsSection(
                 modifier = Modifier
                     .widthIn(max = 400.dp)
-                    .padding(8.dp),
+                    .padding(MaterialTheme.spacing.medium),
                 state = state
 
             )
@@ -213,7 +214,7 @@ private fun HeaderSection (
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -224,13 +225,13 @@ private fun HeaderSection (
             label = { Text(text = "Title") },
             singleLine = true
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         DateSection(
             title = "Start Date",
             date = "${state.fromDateMillis?.let { it -> java.text.SimpleDateFormat("dd MMMM yyyy").format(it) } ?: "Select Date"} ",
             onDateIconClick = { onAction(CalculatorAction.ShowDatePicker(DateField.FROM)) }
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
         DateSection(
             title = "End Date",
             date = "${state.toDateMillis?.let { it -> java.text.SimpleDateFormat("dd MMMM yyyy").format(it) } ?: "Select Date"}",

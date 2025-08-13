@@ -14,10 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.akhirkab.ui.theme.AkhirKabTheme
 import com.presentation.calculator.CalcularUiState
 import com.presentation.calculator.CalculatorScreen
 import com.presentation.calculator.CalculatorViewModel
+import com.presentation.theme.AkhirKabTheme
+import org.koin.androidx.compose.koinViewModel
+import org.koin.viewmodel.factory.KoinViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +30,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
-                    val viewModel: CalculatorViewModel = viewModel()
+                    val viewModel: CalculatorViewModel = koinViewModel()
                     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
                     CalculatorScreen(
