@@ -6,6 +6,7 @@ import com.data.local.OccasionDatabase
 import com.data.repository.OccasionRepositoryImpl
 import com.domain.repository.OccasionRepository
 import com.presentation.calculator.CalculatorViewModel
+import com.presentation.dashboard.DashboardViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
@@ -20,4 +21,6 @@ val appModule = module{
     singleOf(::OccasionRepositoryImpl).bind<OccasionRepository>()
 
     viewModelOf(::CalculatorViewModel)
+    viewModelOf(::DashboardViewModel)
+
 }

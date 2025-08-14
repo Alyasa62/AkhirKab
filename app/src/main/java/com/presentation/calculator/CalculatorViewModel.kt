@@ -116,7 +116,6 @@ class CalculatorViewModel(
         val fromMillis = _uiState.value.fromDateMillis
         val toMillis = _uiState.value.toDateMillis
 
-        // Ensure we don't calculate if dates are not set
         if (fromMillis == null || toMillis == null) {
             return
         }
