@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -64,7 +65,8 @@ import kotlinx.coroutines.flow.Flow
 fun CalculatorScreen(
     modifier: Modifier = Modifier,
     state: CalcularUiState,
-    onAction: (CalculatorAction) -> Unit
+    onAction: (CalculatorAction) -> Unit,
+    navigateUp: () -> Unit = {}
 
 ){
 
@@ -93,7 +95,7 @@ fun CalculatorScreen(
 
         CalculatorTopBar(
             isDeleteIconVisible = true,
-            onBackClick = {  },
+            onBackClick = { navigateUp() },
             onDeleteClick = { },
             onSaveClick = {  onAction(CalculatorAction.SaveOccasion) }
         )
@@ -135,6 +137,7 @@ private fun CalculatorTopBar(
 
 ) {
     TopAppBar(
+        windowInsets = WindowInsets(0),
         modifier = modifier,
         navigationIcon = {
             IconButton(
@@ -307,7 +310,8 @@ private fun PreviewCalculatorScreen() {
     AkhirKabTheme {
         CalculatorScreen(
             state = CalcularUiState(),
-            onAction = {}
+            onAction = {},
+            navigateUp = {}
         )
     }
     

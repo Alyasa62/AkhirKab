@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -41,12 +42,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.domain.model.Occasion
 import com.presentation.component.StylizedAgeText
+import com.presentation.navigation.Route
 import com.presentation.theme.spacing
 
 @Composable
 fun DashboardScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navigateToCalculatorScreen: (Int?) -> Unit
 ) {
+
 
     val dummyOccasion = List(20) {
         Occasion(
@@ -63,7 +67,7 @@ fun DashboardScreen(
     ) {
         DashboardTopBar (
             modifier = Modifier,
-            onAddIconClick = { /* Handle add icon click */ }
+            onAddIconClick = { navigateToCalculatorScreen(null) }
         )
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 400.dp),
@@ -80,7 +84,7 @@ fun DashboardScreen(
                         .padding(8.dp),
                     occasion = occasions,
                     onCalendarIconClick = { /* Handle calendar icon click */ },
-                    onClick = { /* Handle occasion card click */ }
+                    onClick = { navigateToCalculatorScreen(occasions.id) }
                 )
 
 
@@ -101,6 +105,7 @@ private fun DashboardTopBar(
 
 ) {
     TopAppBar(
+        windowInsets = WindowInsets(0),
         modifier = modifier,
         title = { Text(text = "Dashboard") },
         actions = {
@@ -193,6 +198,7 @@ private fun OccasionCard(
 private fun PreviewDashboardScreen() {
     DashboardScreen(
         modifier = Modifier.fillMaxSize()
+        , navigateToCalculatorScreen = {}
     )
     
 }
