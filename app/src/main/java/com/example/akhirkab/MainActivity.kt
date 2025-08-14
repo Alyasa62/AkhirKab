@@ -17,6 +17,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.presentation.calculator.CalcularUiState
 import com.presentation.calculator.CalculatorScreen
 import com.presentation.calculator.CalculatorViewModel
+import com.presentation.dashboard.DashboardScreen
 import com.presentation.theme.AkhirKabTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.viewmodel.factory.KoinViewModelFactory
@@ -30,14 +31,17 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
-                    val viewModel: CalculatorViewModel = koinViewModel()
-                    val state by viewModel.uiState.collectAsStateWithLifecycle()
-
-                    CalculatorScreen(
+//                    val viewModel: CalculatorViewModel = koinViewModel()
+//                    val state by viewModel.uiState.collectAsStateWithLifecycle()
+//
+//                    CalculatorScreen(
+//                        modifier = Modifier.padding(innerPadding),
+//                        state = state,
+//                        onAction = viewModel :: onAction
+//
+//                    )
+                    DashboardScreen(
                         modifier = Modifier.padding(innerPadding),
-                        state = state,
-                        onAction = viewModel :: onAction
-
                     )
                 }
             }
