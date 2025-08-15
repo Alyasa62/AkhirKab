@@ -25,12 +25,12 @@ fun StylizedAgeText(
     days: Int
 ) {
     val numberStyle = SpanStyle(
-        fontSize = 36.sp,
+        fontSize = 28.sp,
         fontWeight = FontWeight.Bold
     )
 
     val wordStyle = SpanStyle(
-        fontSize = 18.sp
+        fontSize = 14.sp
     )
 
     val styledText: AnnotatedString = buildAnnotatedString {

@@ -49,6 +49,7 @@ fun NavGraph(
                     CalculatorScreen(
                         state = state,
                         onAction = viewModel :: onAction,
+                        event = viewModel.event,
                         navigateUp = { navController.navigateUp() }
 
                  )

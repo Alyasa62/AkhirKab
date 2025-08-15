@@ -12,7 +12,8 @@ data class CalcularUiState(
     val toDateMillis: Long? = null,
     val activeDateField: DateField = DateField.FROM,
     val period: DateTimePeriod = DateTimePeriod(),
-    val ageStats: AgeStats = AgeStats()
+    val ageStats: AgeStats = AgeStats(),
+    val occasionId: Int? = null,
 
 )
 

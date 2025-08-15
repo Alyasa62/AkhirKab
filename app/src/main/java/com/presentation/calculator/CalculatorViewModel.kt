@@ -1,16 +1,21 @@
 package com.presentation.calculator
 
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.data.local.OccasionDao
 import com.data.local.OccasionDatabase
 import com.data.local.OccasionEntity
 import com.domain.model.Occasion
 import com.domain.repository.OccasionRepository
+import com.presentation.navigation.Route
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -21,11 +26,17 @@ import kotlinx.datetime.periodUntil
 import kotlinx.datetime.until
 
 class CalculatorViewModel(
+    savedStateHandle: SavedStateHandle,
     private val repository: OccasionRepository,
 ) : ViewModel() {
 
+
+    val occasionId = savedStateHandle.toRoute<Route.CalculatorScreen>().id
     private val _uiState = MutableStateFlow(CalcularUiState())
     val uiState: StateFlow<CalcularUiState> = _uiState.asStateFlow()
+
+    private val _event = Channel<CalculatorEvent>()
+    val event = _event.receiveAsFlow()
 
     init {
         getOccasion()
@@ -57,6 +68,9 @@ class CalculatorViewModel(
                     )
                 }
             }
+            CalculatorAction.DeleteOccasion -> {
+                deleteOccasion()
+            }
 
 
             CalculatorAction.DismissDatePicker -> {
@@ -85,25 +99,30 @@ class CalculatorViewModel(
     private fun saveOccasion() {
         viewModelScope.launch {
             val occasion = Occasion(
-                id = 1,
+                id = occasionId,
                 title = _uiState.value.title,
                 dateMillis = _uiState.value.fromDateMillis,
                 endDateMillis = _uiState.value.toDateMillis,
                 emoji = _uiState.value.emoji
             )
             repository.upsertOccasion(occasion)
+            _event.send(CalculatorEvent.ShowToast("Saved successfully!"))
+            _event.send(CalculatorEvent.NavigateToDashboardScreen)
+
         }
     }
 
     private fun getOccasion() {
         viewModelScope.launch {
-            repository.getOccasionById(1)?.let {
+            if (occasionId == null) return@launch
+            repository.getOccasionById( occasionId)?.let {
                 _uiState.update { currentState ->
                     currentState.copy(
                         title = it.title,
                         emoji = it.emoji,
                         fromDateMillis = it.dateMillis,
-                        toDateMillis = it.endDateMillis
+                        toDateMillis = it.endDateMillis,
+                        occasionId = it.id
                     )
                 }
             }
@@ -111,6 +130,16 @@ class CalculatorViewModel(
         }
     }
 
+
+
+    private fun deleteOccasion() {
+        viewModelScope.launch {
+            if (occasionId == null) return@launch
+            repository.deleteOccasion(occasionId)
+            _event.send(CalculatorEvent.ShowToast("Deleted successfully!"))
+            _event.send(CalculatorEvent.NavigateToDashboardScreen)
+        }
+    }
     private fun calculateStats() {
         val timeZone = TimeZone.currentSystemDefault()
         val fromMillis = _uiState.value.fromDateMillis

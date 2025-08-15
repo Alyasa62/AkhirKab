@@ -1,6 +1,7 @@
 package com.presentation.calculator
 
 import android.R
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.content.MediaType.Companion.Text
@@ -34,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +47,7 @@ import androidx.compose.ui.autofill.ContentDataType.Companion.Text
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.input.pointer.PointerIcon.Companion.Text
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.SemanticsProperties.Text
 import androidx.compose.ui.text.input.KeyboardType.Companion.Text
@@ -60,15 +63,35 @@ import com.presentation.theme.CustomBlue
 import com.presentation.theme.CustomPink
 import com.presentation.theme.spacing
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun CalculatorScreen(
-    modifier: Modifier = Modifier,
+    event: Flow<CalculatorEvent>,
     state: CalcularUiState,
     onAction: (CalculatorAction) -> Unit,
     navigateUp: () -> Unit = {}
 
 ){
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        event.collect { event ->
+            when(event) {
+                is CalculatorEvent.ShowToast -> {
+                    Toast.makeText(
+                         context,
+                         event.message,
+                         Toast.LENGTH_SHORT
+                    ).show()
+                }
+                CalculatorEvent.NavigateToDashboardScreen -> {
+                    navigateUp()
+                }
+            }
+        }
+    }
 
     EmojiPickerDialog(
         isOpen = state.isEmojiPickerDialogOpen,
@@ -94,9 +117,9 @@ fun CalculatorScreen(
     ) {
 
         CalculatorTopBar(
-            isDeleteIconVisible = true,
+            isDeleteIconVisible = state.occasionId != null,
             onBackClick = { navigateUp() },
-            onDeleteClick = { },
+            onDeleteClick = { onAction(CalculatorAction.DeleteOccasion) },
             onSaveClick = {  onAction(CalculatorAction.SaveOccasion) }
         )
         FlowRow(
@@ -311,7 +334,8 @@ private fun PreviewCalculatorScreen() {
         CalculatorScreen(
             state = CalcularUiState(),
             onAction = {},
-            navigateUp = {}
+            navigateUp = {},
+            event = emptyFlow()
         )
     }
     

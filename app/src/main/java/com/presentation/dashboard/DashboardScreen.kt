@@ -38,6 +38,7 @@ import com.presentation.component.CustomDatePickerDialog
 import com.presentation.component.StylizedAgeText
 import com.presentation.theme.spacing
 import com.presentation.util.periodUntil
+import com.presentation.util.toFormattedDateString
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -134,12 +135,16 @@ private fun OccasionCard(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(MaterialTheme.spacing.small),
+                .padding(
+                    start =  MaterialTheme.spacing.medium,
+                    top = MaterialTheme.spacing.small),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = occasion.emoji,
                 fontSize = MaterialTheme.typography.headlineLarge.fontSize,
             )
+            Spacer(modifier = Modifier.size(MaterialTheme.spacing.medium))
             Column {
                 Text(
                     text = occasion.title,
@@ -149,6 +154,8 @@ private fun OccasionCard(
 
                 Text(
                     text = dateMillis?.toFormattedDateString() ?: "No Date",
+
+
                 )
             }
             Spacer( modifier = Modifier.weight(1f))
@@ -163,11 +170,13 @@ private fun OccasionCard(
             }
         StylizedAgeText(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(MaterialTheme.spacing.small),
+                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .align(Alignment.CenterHorizontally),
+
             years = dateMillis?.periodUntil()?.years ?: 0,
             months = dateMillis?.periodUntil()?.months ?: 0,
             days = dateMillis?.periodUntil()?.days ?: 0,
+
         )
         FilledIconButton(
             modifier = Modifier.padding(MaterialTheme.spacing.small)
@@ -215,7 +224,4 @@ private fun PreviewDashboardScreen() {
 
 }
 
-fun Long.toFormattedDateString(): String {
-    val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-    return sdf.format(Date(this))
-}
+
