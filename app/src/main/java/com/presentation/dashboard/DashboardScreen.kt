@@ -1,6 +1,7 @@
 package com.presentation.dashboard
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,8 +17,9 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
-
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
@@ -25,9 +27,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -36,63 +43,62 @@ import androidx.compose.ui.unit.dp
 import com.domain.model.Occasion
 import com.presentation.component.CustomDatePickerDialog
 import com.presentation.component.StylizedAgeText
+import com.presentation.theme.AkhirKabTheme
+import com.presentation.theme.ThemeToggleButton
 import com.presentation.theme.spacing
 import com.presentation.util.periodUntil
 import com.presentation.util.toFormattedDateString
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun DashboardScreen(
     modifier: Modifier = Modifier,
     navigateToCalculatorScreen: (Int?) -> Unit,
     state: DashboardUiState,
-    onAction: (DashboardAction) -> Unit = {  }
+    onAction: (DashboardAction) -> Unit = { }
 ) {
+    val systemDarkTheme = isSystemInDarkTheme()
+    var isDarkTheme by remember { mutableStateOf(systemDarkTheme) }
 
-    CustomDatePickerDialog(
-        isOpen = state.isDatePickerDialogOpen,
-        onDismissRequest = { onAction(DashboardAction.DismissDatePicker) },onConfirmButtonClick = { selectedDateMillis ->
-            onAction(DashboardAction.DateSelected(date = selectedDateMillis))
-        }
-
-    )
-
-
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
-        DashboardTopBar (
-            modifier = Modifier,
-            onAddIconClick = { navigateToCalculatorScreen(null) }
-        )
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 400.dp),
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(MaterialTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
-        ) {
-            items(state.occasions) { occasions ->
-                OccasionCard(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
-                    occasion = occasions,
-                    onCalendarIconClick = { onAction(DashboardAction.ShowDatePicker(occasions)) },
-                    onClick = { navigateToCalculatorScreen(occasions.id) }
-                )
-
-
+    AkhirKabTheme(darkTheme = isDarkTheme) {
+        CustomDatePickerDialog(
+            isOpen = state.isDatePickerDialogOpen,
+            onDismissRequest = { onAction(DashboardAction.DismissDatePicker) },
+            onConfirmButtonClick = { selectedDateMillis ->
+                onAction(DashboardAction.DateSelected(date = selectedDateMillis))
             }
+        )
 
+        Scaffold(
+            topBar = {
+                DashboardTopBar(
+                    onAddIconClick = { navigateToCalculatorScreen(null) },
+                    isDarkTheme = isDarkTheme,
+                    onThemeChange = { isDarkTheme = it }
+                )
+            }
+        ) { paddingValues ->
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 400.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(MaterialTheme.spacing.medium),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
+            ) {
+                items(state.occasions) { occasion ->
+                    OccasionCard(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp),
+                        occasion = occasion,
+                        onCalendarIconClick = { onAction(DashboardAction.ShowDatePicker(occasion)) },
+                        onClick = { navigateToCalculatorScreen(occasion.id) }
+                    )
+                }
+            }
         }
-
     }
-
-    
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -100,26 +106,30 @@ fun DashboardScreen(
 private fun DashboardTopBar(
     modifier: Modifier = Modifier,
     onAddIconClick: () -> Unit,
-
+    isDarkTheme: Boolean,
+    onThemeChange: (Boolean) -> Unit
 ) {
     TopAppBar(
         windowInsets = WindowInsets(0),
         modifier = modifier,
-        title = { Text(text = "Dashboard") },
+        title = { Text(text = "Dashboard", style = MaterialTheme.typography.headlineSmall) },
         actions = {
+            ThemeToggleButton(
+                isDarkTheme = isDarkTheme,
+                onThemeChange = onThemeChange
+            )
             IconButton(
                 onClick = onAddIconClick
             ) {
-                    Icon(
+                Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add"
                 )
             }
         },
-
-        )
-
+    )
 }
+
 
 @Composable
 private fun OccasionCard(
@@ -136,8 +146,9 @@ private fun OccasionCard(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
-                    start =  MaterialTheme.spacing.medium,
-                    top = MaterialTheme.spacing.small),
+                    start = MaterialTheme.spacing.medium,
+                    top = MaterialTheme.spacing.small
+                ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
@@ -154,11 +165,9 @@ private fun OccasionCard(
 
                 Text(
                     text = dateMillis?.toFormattedDateString() ?: "No Date",
-
-
                 )
             }
-            Spacer( modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
             IconButton(
                 onClick = onCalendarIconClick
             ) {
@@ -167,7 +176,7 @@ private fun OccasionCard(
                     contentDescription = "Add"
                 )
             }
-            }
+        }
         StylizedAgeText(
             modifier = Modifier
                 .padding(horizontal = 8.dp, vertical = 8.dp)
@@ -177,9 +186,10 @@ private fun OccasionCard(
             months = dateMillis?.periodUntil()?.months ?: 0,
             days = dateMillis?.periodUntil()?.days ?: 0,
 
-        )
+            )
         FilledIconButton(
-            modifier = Modifier.padding(MaterialTheme.spacing.small)
+            modifier = Modifier
+                .padding(MaterialTheme.spacing.small)
                 .align(Alignment.End)
                 .size(25.dp),
             onClick = onClick,
@@ -195,9 +205,8 @@ private fun OccasionCard(
                 contentDescription = "Show Details"
             )
         }
-        }
     }
-
+}
 
 
 @Preview(showBackground = true)
@@ -213,15 +222,12 @@ private fun PreviewDashboardScreen() {
         )
     }
 
-
     DashboardScreen(
         state = DashboardUiState(occasions = dummyOccasion),
-        modifier = Modifier.fillMaxSize()
-        , navigateToCalculatorScreen = {},
+        modifier = Modifier.fillMaxSize(),
+        navigateToCalculatorScreen = {},
         onAction = {}
-
     )
-
 }
 
 

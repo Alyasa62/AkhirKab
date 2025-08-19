@@ -31,6 +31,6 @@ fun Long?.toFormattedDateString(): String {
      val timeZone = TimeZone.currentSystemDefault()
      val fromInstant = Instant.fromEpochMilliseconds(this ?: System.currentTimeMillis())
      val toInstant = Clock.System.now()
-        return fromInstant.periodUntil(toInstant, timeZone = timeZone)
+     return fromInstant.periodUntil(toInstant, timeZone = timeZone)
  }
 

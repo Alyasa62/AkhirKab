@@ -1,7 +1,17 @@
 package com.presentation.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -10,8 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -256,7 +269,6 @@ val unspecified_scheme = ColorFamily(
 @Composable
 fun AkhirKabTheme (
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable() () -> Unit
 ) {
@@ -278,4 +290,30 @@ fun AkhirKabTheme (
   )
 }
 }
+
+@Composable
+fun ThemeToggleButton(
+    isDarkTheme: Boolean,
+    onThemeChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.padding(4.dp)
+    ) {
+        Icon(
+            imageVector = if (isDarkTheme) Icons.Default.DarkMode else Icons.Default.LightMode,
+            contentDescription = "Theme Icon"
+        )
+        Spacer(modifier = Modifier.width(2.dp))
+//        Text(text = if (isDarkTheme) "Dark Theme" else "Light Theme")
+        Spacer(modifier = Modifier.width(4.dp))
+        Switch(
+            checked = isDarkTheme,
+            onCheckedChange = onThemeChange
+        )
+    }
+}
+
+
 
